@@ -4,8 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.ryx.dao.Classes;
 import com.ryx.pojo.User;
 import com.ryx.service.IUserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -27,10 +25,6 @@ import java.util.List;
 @Controller
 @RequestMapping("/home")
 public class HomeController {
-    //添加一个日志器
-    private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
-
-
     @Autowired
     @Qualifier("UserServiceImpl")
     private IUserService userService;
