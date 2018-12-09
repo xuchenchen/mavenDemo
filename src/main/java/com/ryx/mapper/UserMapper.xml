@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ryx.mapper.UserMapper">
+    <resultMap id="UserMapper" type="com.ryx.pojo.User">
+        <id property="id" column="id" />
+        <result property="userName" column="userName" />
+        <result property="password" column="password" />
+    </resultMap>
+    <resultMap id="usMap" type="com.ryx.dao.Classes">
+        <id property="id" column="c_id"></id>
+        <result property="name" column="c_name"></result>
+        <association property="teacher" javaType="com.ryx.dao.Teacher">
+            <id property="id" column="teacher_id"></id>
+            <result property="name" column="t_name"></result>
+        </association>
+    </resultMap>
+    <resultMap id="classMap" type="com.ryx.dao.Classes">
+        <result property="id" column="c_id"></result>
+        <result property="name" column="c_name"></result>
+        <association property="teacher" column="teacher_id" select="getTeacher"></association>
+    </resultMap>
+    <select id="getTeacher" parameterType="int" resultType="com.ryx.dao.Teacher">
+        select t_id,t_name  from teacher where t_id=#{id}
+    </select>
+
+
+    <select id="getClassBiao" resultMap="classMap">
+        select * from class where c_id=1
+    </select>
+
+    <select id="getMapUserAndUsers" resultMap="usMap">
+        select c.c_id,c.c_name,c.teacher_id,t.t_id,t.t_name from class c left JOIN teacher t on c.teacher_id=t.t_id where c.c_id=1;
+    </select>
+
+    <select id="getUsers" resultMap="UserMapper">
+        select id,userName,password from t_user
+    </select>
+    <insert id="insertData" parameterType="int">
+        INSERT INTO t_user (id,userName,password) VALUES (5,'lisizahsng','43434234');
+    </insert>
+</mapper>
