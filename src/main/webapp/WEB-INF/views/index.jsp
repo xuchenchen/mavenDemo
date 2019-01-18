@@ -13,13 +13,13 @@
 
 <html>
 <head>
-    <title>瑞银信测试包下载页</title>
+    <title>瑞银信测试包下载页2</title>
 </head>
 <body>
 <script src="/jss/jquery-3.3.1.js"></script>
 <script src="/jss/json2.js"></script>
 <h1>${uid}11111</h1>
-<h2>测试乱码</h2>
+<h2 id="h2id">测试乱码</h2>
 <h2>${pageContext.request.servletPath}</h2>
 <%--<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>--%>
 <%--<form:form modelAttribute="user" action="/home/register2">
@@ -169,6 +169,9 @@
     <li><a href="http://www.baidu.com">你好</a></li>
 </ul>--%>
 <script>
+
+
+
     function ajaxPost() {
       var jsonStr=  JSON.stringify({age:11,name:"XUcc",id:"ids"});
         $("#id").html(jsonStr);

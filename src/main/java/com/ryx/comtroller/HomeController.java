@@ -1,25 +1,29 @@
 package com.ryx.comtroller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.ryx.dao.Classes;
+import com.ryx.dao.JieQianYongBean;
+import com.ryx.generratorpojo.Teacher;
 import com.ryx.pojo.User;
 import com.ryx.service.IUserService;
+import com.ryx.service.TeacherService;
+import com.ryx.util.HttpClientHelper;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
+import java.util.Map;
 
 /**
- * @author Chingyu Mo
- * @create 2016-07-23-20:20
  */
 // 注解标注此类为springmvc的controller，url映射为"/home"
 @Controller
@@ -29,12 +33,118 @@ public class HomeController {
     @Qualifier("UserServiceImpl")
     private IUserService userService;
 
+    @Autowired
+    @Qualifier("TeacherServiceImpl")
+    private TeacherService teacherService;
+
+    @RequestMapping("easyuidemo")
+    public String easyuidemo(){
+        return "easyui/easyuidemo";
+    }
+    @RequestMapping("cssdemo")
+    public String cssdemo(){
+        return "cssdemo";
+    }
+    @RequestMapping("bootstrap")
+    public String bootstrap(){
+        return "bootstrap/bootstrap";
+    }
+
+    @ResponseBody
+    @RequestMapping("inserUsers")
+    public String inserUsers(){
+
+
+        for(int m=2;m<60;m++){
+            try {
+                String url="http://www.jieqianyong.com.cn:8081/loanSix/user/selectUsers.do?currentPage="+m+"&showCount=10000";
+                String result=HttpClientHelper.sendPost(url, null, "UTF-8");
+                Document document= Jsoup.parse(result);
+                Elements tbodyElement=document.getElementsByTag("tbody");
+                Element trElement=  tbodyElement.get(1);
+                Elements trElements=trElement.getElementsByTag("tr");
+                for (int i=0;i<trElements.size();i++){
+                    Element element= trElements.get(i);
+                    Elements tdlies=element.getElementsByTag("td");
+                    Element element0=tdlies.get(0);
+                    Element element1=tdlies.get(1);
+
+                    Element element2=tdlies.get(2);
+                    Element element3=tdlies.get(3);
+                    Element element4=tdlies.get(4);
+                    Element element5=tdlies.get(5);
+                    Element element6=tdlies.get(6);
+                    System.out.println(element0.text()+","+element1.text()+","+element2.text()+","+element3.text()+","+element4.text()+","+element5.text()+","+element6.text()+",");
+
+                    try {
+                        JieQianYongBean jieQianYongBean=new JieQianYongBean(element0.text(),element1.text(),element3.text(),element2.text(),element4.text(),element5.text(),element6.text());
+                        int index=userService.insertJieQianYongBean(jieQianYongBean);
+                    }catch (Exception e){
+
+                    }
+
+                }
+            }catch (Exception e){
+
+            }
+
+        }
+
+
+        return "success";
+    }
+
+    @ResponseBody
+    @RequestMapping("findUsersByPage")
+    public Object findUsersByPage(@RequestParam int page,@RequestParam int rows ){
+        System.out.println("page=="+page+",rows=="+rows);
+        int pagestart=(page-1)*rows;
+        int pagesend=page*rows;
+         List<User> users=   userService.findUsersByPage(pagestart,pagesend);
+
+         JSONObject jsonresultObject=new JSONObject();
+         jsonresultObject.put("total",100);
+         jsonresultObject.put("rows",users);
+        return jsonresultObject;
+    }
+    @ResponseBody
+    @RequestMapping("insertTeacher")
+    public String insertTeacher(@ModelAttribute Teacher teacher){
+      int id=  teacherService.insert(teacher);
+        if(id>0){
+         Teacher teacher1=   teacherService.selectByPrimaryKey(id);
+            String teacherStr= JSON.toJSONString(teacher1);
+            return teacherStr;
+        }else{
+            return "fail";
+        }
+    }
     @RequestMapping("getUsers")
     @ResponseBody
     public Object findUsers() {
         List<User> list = userService.getUsers();
         System.out.println("list=="+list.toString());
+//        JSONObject jsonObject=new JSONObject();
+//       JSONArray jsonArray= JSON.parseArray(JSON.toJSONString(list));
+//        jsonObject.put("rows",jsonArray);
         return list;
+    }
+
+    @ResponseBody
+    @RequestMapping("saveUser")
+    public String saveUser(@ModelAttribute User user){
+        int a=userService.saveUser(user);
+       JSONObject jsonObject= new JSONObject();
+        jsonObject.put("success","true");
+        return JSON.toJSONString(jsonObject);
+    }
+    @ResponseBody
+    @RequestMapping("editUser")
+    public String editUser(@ModelAttribute User user){
+       int result= userService.editUser(user);
+        JSONObject jsonObject= new JSONObject();
+        jsonObject.put("success","true");
+        return JSON.toJSONString(jsonObject);
     }
 
     @RequestMapping("getUserByIdREsponBody/{id}")
@@ -54,19 +164,19 @@ public class HomeController {
         return "index" ;
     }
 
-    @Transactional
-    @RequestMapping("saveUser")
-    public String saveUser(@RequestParam int id, @RequestParam String pswd, @RequestParam String username, Model model){
-        User user=new User();
-        user.setId(id);
-        user.setPassword(pswd);
-        user.setUserName(username);
-      int aid=  userService.saveUser(user);
-//        String a=null;
-//        a.isEmpty();
-        model.addAttribute("aid",aid);
-        return "index";
-    }
+//    @Transactional
+//    @RequestMapping("saveUser")
+//    public String saveUser(@RequestParam int id, @RequestParam String pswd, @RequestParam String username, Model model){
+//        User user=new User();
+//        user.setId(id);
+//        user.setPassword(pswd);
+//        user.setUserName(username);
+//      int aid=  userService.saveUser(user);
+////        String a=null;
+////        a.isEmpty();
+//        model.addAttribute("aid",aid);
+//        return "index";
+//    }
     @RequestMapping("insert")
     public String insertData(){
        int i= userService.insertData();
@@ -142,6 +252,20 @@ public class HomeController {
     @ResponseBody
     public String getClassAndrTeachers(){
        Classes classes= userService.getMapUserAndUsers();
+       String result=JSON.toJSONString(classes);
+        return result;
+    }
+    @RequestMapping("getClassAndrTeachersMaps")
+    @ResponseBody
+    public String getClassAndrTeachersMaps(){
+       List<Classes> classes= userService.getClassAndrTeachersMaps();
+       String result=JSON.toJSONString(classes);
+        return result;
+    }
+    @RequestMapping("getMaps")
+    @ResponseBody
+    public String getMaps(){
+       List<Map> classes= userService.getMaps();
        String result=JSON.toJSONString(classes);
         return result;
     }

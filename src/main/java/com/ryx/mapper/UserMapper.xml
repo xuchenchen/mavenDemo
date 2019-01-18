@@ -10,7 +10,7 @@
     <resultMap id="usMap" type="com.ryx.dao.Classes">
         <id property="id" column="c_id"></id>
         <result property="name" column="c_name"></result>
-        <association property="teacher" javaType="com.ryx.dao.Teacher">
+        <association property="teacher" javaType="com.ryx.generratorpojo.Teacher">
             <id property="id" column="teacher_id"></id>
             <result property="name" column="t_name"></result>
         </association>
@@ -20,13 +20,27 @@
         <result property="name" column="c_name"></result>
         <association property="teacher" column="teacher_id" select="getTeacher"></association>
     </resultMap>
-    <select id="getTeacher" parameterType="int" resultType="com.ryx.dao.Teacher">
-        select t_id,t_name  from teacher where t_id=#{id}
+    <resultMap id="ResultMapA" type="Map">
+        <result property="idA" column="cname"></result>
+        <result property="nameA" column="tid"></result>
+        <result property="name" column="tname"></result>
+
+
+    </resultMap>
+    <select id="getMaps" resultMap="ResultMapA">
+      SELECT c.c_name cname,c.teacher_id tid,t.t_name tname FROM class c,teacher t;
+    </select>
+
+    <select id="getTeacher" parameterType="int" resultType="com.ryx.generratorpojo.Teacher">
+        select t_id id,t_name name from teacher where t_id=#{id}
     </select>
 
 
     <select id="getClassBiao" resultMap="classMap">
         select * from class where c_id=1
+    </select>
+    <select id="getClassAndrTeachersMaps" resultMap="classMap">
+        select * from class
     </select>
 
     <select id="getMapUserAndUsers" resultMap="usMap">
@@ -39,4 +53,14 @@
     <insert id="insertData" parameterType="int">
         INSERT INTO t_user (id,userName,password) VALUES (5,'lisizahsng','43434234');
     </insert>
+    <insert id="insertJieQianYongBean" parameterType="com.ryx.dao.JieQianYongBean">
+        INSERT INTO jieqianyong (id,phone,sex,devid,phoneType,regtime,lastlogintime) VALUES(#{id},#{phone},#{sex},#{devid},#{phoneType},#{regtime},#{lastlogintime})
+    </insert>
+
+    <update id="editUser" parameterType="com.ryx.pojo.User">
+      update t_user usr SET usr.`password`=#{password} ,usr.userName=#{userName} where usr.id=#{id}
+    </update>
+    <select id="findUsersByPage" parameterType="int" resultType="com.ryx.pojo.User">
+      select * from t_user t LIMIT #{0},#{1};
+    </select>
 </mapper>

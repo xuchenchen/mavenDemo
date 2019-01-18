@@ -1,6 +1,10 @@
 package com.ryx.dao;
 
-public class Classes {
+import com.ryx.generratorpojo.Teacher;
+
+import java.io.Serializable;
+
+public class Classes implements Serializable {
     //定义实体类的属性，与class表中的字段对应
     private int id;            //id===>c_id
     private String name;    //name===>c_name

@@ -16,7 +16,14 @@
         <!-- jar 版本设置 -->
         <spring.version>4.2.4.RELEASE</spring.version>
     </properties>
-
+<!--<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId></groupId>
+            <artifactId></artifactId>
+        </dependency>
+    </dependencies>
+</dependencyManagement>-->
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -189,6 +196,21 @@
           <artifactId>jackson-mapper-asl</artifactId>
           <version>1.9.13</version>
       </dependency>
+      <dependency>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpcore</artifactId>
+          <version>4.0.1</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpclient</artifactId>
+          <version>4.5.5</version>
+      </dependency>
+      <dependency>
+          <groupId>org.jsoup</groupId>
+          <artifactId>jsoup</artifactId>
+          <version>1.7.3</version>
+      </dependency>
   </dependencies>
 
   <build>
@@ -210,6 +232,7 @@
               <configuration>
                   <verbose>true</verbose>
                   <overwrite>true</overwrite>
+                  <configurationFile>${project.basedir}/src/main/resources/generatorConfig.xml</configurationFile>
               </configuration>
           </plugin>
       </plugins>
